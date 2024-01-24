@@ -13,4 +13,9 @@ terraform apply
 
 ## Usage
 You will find an example of client interaction with the lambda function in the `client` directory.
-To run the eaxample 
+To run the example client, run the following commands:
+
+```bash
+cd client
+ts-node client.ts
+``` 
