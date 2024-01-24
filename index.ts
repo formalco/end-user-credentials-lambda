@@ -1,19 +1,19 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
 import axios from 'axios';
-import AWS from 'aws-sdk';
 import {
   GetSecretValueCommand,
   SecretsManagerClient,
 } from "@aws-sdk/client-secrets-manager";
 
-const apiUrl = 'https://adminv2.api.formalcloud.net/admin.v1.UserService/GetHumanUserAuthToken';
+const apiUrl = 'https://adminv2.api.formalcloud.net/admin.v1.UserService/CreateHumanUserAuthToken';
 const FORMAL_API_KEY_SECRET_ID = 'formal-api-key';
-let FORMAL_API_KEY = process.env.FORMAL_API_KEY || '';
+let FORMAL_API_KEY = '';
 const client = new SecretsManagerClient();
 
 interface Response {
   username: string;
   token: string;
+  expiresAt: string;
 }
 
 async function getAuthToken(apiKey: string, email: string): Promise<Response> {
@@ -30,6 +30,7 @@ async function getAuthToken(apiKey: string, email: string): Promise<Response> {
     return {
       token: res.data.token,
       username: res.data.username,
+      expiresAt: res.data.expiresAt,
     }
   } catch (error) {
     console.error('Error:', error);
@@ -117,6 +118,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
       {
         token: userToken.token,
         username: userToken.username,
+        expiresAt: userToken.expiresAt,
       },
       null,
       2

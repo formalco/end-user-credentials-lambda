@@ -12,3 +12,7 @@ dist
 .lock.hcl
 
 .terraform
+
+.terraform.lock.hcl
+terraform.tfstate
+package-lock.json
