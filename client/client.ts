@@ -8,12 +8,13 @@ const {
   AWS_SESSION_TOKEN
 } = process.env;
 
-const apiGatewayUrl = 'https://61asyxlfs1.execute-api.us-east-1.amazonaws.com/prod/crendentials'
+const apiGatewayUrl = '[REPLACE_WITH_API_ENDPOINT]]/crendentials'
+const awsRegion = '[REPLACE_WITH_AWS_REGION]'; // e.g. 'us-east-1'
 
 // Create an IAM signer for the request
 const sigv4 = new SignatureV4({
   service: 'execute-api',
-  region: 'us-east-1',
+  region: awsRegion,
   credentials: {
     accessKeyId: AWS_ACCESS_KEY_ID || '',
     secretAccessKey: AWS_SECRET_ACCESS_KEY || '',
