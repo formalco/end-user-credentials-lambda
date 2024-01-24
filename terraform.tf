@@ -11,6 +11,10 @@ variable "formal_api_key" {
     sensitive = true
 }
 
+variable "api_stage_auto_deploy" {
+  type = bool
+}
+
 resource "aws_iam_role" "lambda_execution_role" {
   name = "lambda_execution_role"
   assume_role_policy = jsonencode({
@@ -124,6 +128,7 @@ resource "aws_apigatewayv2_stage" "stage" {
   api_id      = aws_apigatewayv2_api.formal.id
   name        = "prod"
   deployment_id = aws_apigatewayv2_deployment.deployment.id
+  auto_deploy = var.api_stage_auto_deploy
 }
 
 output "api_endpoint" {
