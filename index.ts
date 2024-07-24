@@ -5,18 +5,18 @@ import {
   SecretsManagerClient,
 } from "@aws-sdk/client-secrets-manager";
 
-const apiUrl = 'https://adminv2.api.formalcloud.net/admin.v1.UserService/CreateHumanUserAuthToken';
+const apiUrl = 'https://v2api.formalcloud.net/core.v1.UserService/CreateHumanUserPassword';
 const FORMAL_API_KEY_SECRET_ID = 'formal-api-key';
 let FORMAL_API_KEY = '';
 const client = new SecretsManagerClient();
 
-interface Response {
+interface FormalAPIResponse {
   username: string;
-  token: string;
+  password: string;
   expiresAt: string;
 }
 
-async function getAuthToken(apiKey: string, email: string): Promise<Response> {
+async function getAuthToken(apiKey: string, email: string): Promise<FormalAPIResponse> {
   try {
     const requestData = { 
       email: email 
@@ -28,7 +28,7 @@ async function getAuthToken(apiKey: string, email: string): Promise<Response> {
       },
     })
     return {
-      token: res.data.token,
+      password: res.data.password,
       username: res.data.username,
       expiresAt: res.data.expiresAt,
     }
@@ -116,7 +116,7 @@ export const handler = async (event: APIGatewayProxyEvent): Promise<APIGatewayPr
     statusCode: 200,
     body: JSON.stringify(
       {
-        token: userToken.token,
+        token: userToken.password,
         username: userToken.username,
         expiresAt: userToken.expiresAt,
       },

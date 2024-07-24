@@ -8,7 +8,7 @@ const {
   AWS_SESSION_TOKEN
 } = process.env;
 
-const apiGatewayUrl = '[REPLACE_WITH_API_ENDPOINT]]/crendentials'
+const apiGatewayUrl = '[REPLACE_WITH_API_ENDPOINT]/crendentials'
 const awsRegion = '[REPLACE_WITH_AWS_REGION]'; // e.g. 'us-east-1'
 
 // Create an IAM signer for the request

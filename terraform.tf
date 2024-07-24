@@ -36,23 +36,23 @@ resource "aws_iam_policy_attachment" "lambda_execution" {
 }
 
 resource "aws_iam_policy" "lambda_secret_policy" {
-    name = "lambda"
-    policy = jsonencode({
-        Version = "2012-10-17",
-        Statement = [{
-        Action = [
-            "secretsmanager:GetSecretValue",
-        ],
-        Effect = "Allow",
-        Resource = aws_secretsmanager_secret.api_key.arn
-        }]
-    })
+  name = "lambda"
+  policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Action = [
+        "secretsmanager:GetSecretValue",
+      ],
+      Effect = "Allow",
+      Resource = aws_secretsmanager_secret.api_key.arn
+    }]
+  })
 }
 
 resource "aws_iam_policy_attachment" "lambda_secret" {
-    name = "formal-credentials-lambda-secret-policy"
-    roles = [aws_iam_role.lambda_execution_role.name]
-    policy_arn = aws_iam_policy.lambda_secret_policy.arn
+  name = "formal-credentials-lambda-secret-policy"
+  roles = [aws_iam_role.lambda_execution_role.name]
+  policy_arn = aws_iam_policy.lambda_secret_policy.arn
 }
 
 resource "aws_lambda_function" "credentials-lambda" {
@@ -71,7 +71,7 @@ resource "aws_secretsmanager_secret" "api_key" {
   name = "formal-api-key"
 }
 
-resource "aws_secretsmanager_secret_version" "api_key_version" {
+resource "aws_secretsmanager_secret_version" "api_key" {
   secret_id     = aws_secretsmanager_secret.api_key.id
   secret_string = var.formal_api_key
 }
