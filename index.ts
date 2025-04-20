@@ -1,11 +1,11 @@
 import { APIGatewayProxyEvent, APIGatewayProxyResult } from "aws-lambda";
-import axios from 'axios';
+import * as http2 from 'http2';
 import {
   GetSecretValueCommand,
   SecretsManagerClient,
 } from "@aws-sdk/client-secrets-manager";
 
-const apiUrl = 'https://v2api.formalcloud.net/core.v1.UserService/CreateHumanUserPassword';
+const apiUrl = 'https://api.joinformal.com';
 const FORMAL_API_KEY_SECRET_ID = 'formal-api-key';
 let FORMAL_API_KEY = '';
 const client = new SecretsManagerClient();
@@ -17,25 +17,52 @@ interface FormalAPIResponse {
 }
 
 async function getAuthToken(apiKey: string, email: string): Promise<FormalAPIResponse> {
-  try {
-    const requestData = { 
-      email: email 
-    };
-    const res = await axios.post(apiUrl, requestData, {
-      headers: {
-        'Content-Type': 'application/json',
-        'X-Api-Key': apiKey,
-      },
-    })
-    return {
-      password: res.data.password,
-      username: res.data.username,
-      expiresAt: res.data.expiresAt,
-    }
-  } catch (error) {
-    console.error('Error:', error);
-    throw error;
-  }
+  return new Promise((resolve, reject) => {
+
+    const client = http2.connect(apiUrl);
+    
+    client.on('error', (err) => {
+      console.error('HTTP/2 connection error:', err);
+      reject(err);
+    });
+
+    const req = client.request({
+      ':method': 'POST',
+      ':path': '/core.v1.UserService/CreateHumanUserPassword',
+      'content-type': 'application/json',
+      'x-api-key': apiKey,
+    });
+
+    let responseData = '';
+
+    req.on('response', (headers) => {
+      req.on('data', (chunk) => {
+        responseData += chunk;
+      });
+
+      req.on('end', () => {
+        try {
+          const data = JSON.parse(responseData);
+          resolve({
+            password: data.password,
+            username: data.username,
+            expiresAt: data.expiresAt,
+          });
+        } catch (error) {
+          reject(error);
+        }
+        client.close();
+      });
+    });
+
+    req.on('error', (error) => {
+      console.error('Request error:', error);
+      reject(error);
+      client.close();
+    });
+
+    req.end(JSON.stringify({ email }));
+  });
 }
 
 function isValidEmail(email: string): boolean {
